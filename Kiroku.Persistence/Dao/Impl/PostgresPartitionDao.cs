@@ -17,12 +17,12 @@ namespace Kiroku.Persistence.Dao.Impl
 
         public async Task CreateTablePartition(string partitionName, DateTime startDate, DateTime endDate)
         {
-            await _databaseContext.Database.ExecuteSqlRawAsync($"CREATE TABLE {partitionName} PARTITION OF logs FOR VALUES FROM ('{startDate:o}') TO ('{endDate:o}');");
+            await _databaseContext.Database.ExecuteSqlRawAsync($"CREATE TABLE \"{partitionName}\" PARTITION OF logs FOR VALUES FROM ('{startDate:o}') TO ('{endDate:o}');");
         }
 
         public async Task DeletePartition(string partitionName)
         {
-            await _databaseContext.Database.ExecuteSqlRawAsync($"DROP TABLE {partitionName};");
+            await _databaseContext.Database.ExecuteSqlRawAsync($"DROP TABLE \"{partitionName}\";");
         }
 
         public async Task<IEnumerable<string>> GetLogsTablePartitions()
