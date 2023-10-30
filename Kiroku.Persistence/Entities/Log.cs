@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -11,10 +12,6 @@ using System.Threading.Tasks;
 
 namespace Kiroku.Persistence.Entities
 {
-    public enum LogLevel
-    {
-        Trace, Debug, Info, Warning, Error, Fatal
-    }
 
     [Table("logs")]
     [Keyless]

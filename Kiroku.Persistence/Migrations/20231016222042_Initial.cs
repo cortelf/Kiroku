@@ -15,7 +15,7 @@ namespace Kiroku.Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
-                .Annotation("Npgsql:Enum:log_level", "trace,debug,info,warning,error,fatal");
+                .Annotation("Npgsql:Enum:log_level", "trace,debug,information,warning,error,critical,none");
 
             migrationBuilder.Sql(@"CREATE TABLE logs (
     id serial NOT NULL,
