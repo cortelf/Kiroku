@@ -14,10 +14,10 @@ namespace Kiroku.Persistence.Entities
 {
 
     [Table("logs")]
-    [Keyless]
     public class Log : IDisposable
     {
         [Column("id")]
+        [Key]
         public int Id { get; set; }
         [Column("level")]
         public required LogLevel Level { get; set; }

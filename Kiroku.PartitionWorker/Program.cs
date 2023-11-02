@@ -8,7 +8,7 @@ IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((hostContext, services) =>
     {
         services.AddPersistence(hostContext.Configuration);
-        services.AddBusiness(hostContext.Configuration);
+        services.AddBusiness();
 
         services.AddQuartz(q =>
         {

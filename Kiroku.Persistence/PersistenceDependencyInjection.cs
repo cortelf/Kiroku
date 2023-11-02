@@ -35,6 +35,7 @@ namespace Kiroku.Persistence
         public static void AddDao(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<IPostgresPartitionDao, PostgresPartitionDao>();
+            services.AddScoped<ILogDao, LogDao>();
         }
     }
 }
