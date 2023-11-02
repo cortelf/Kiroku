@@ -19,8 +19,8 @@ namespace Kiroku.Persistence.Tests
             .WithImage("postgres:16-alpine")
             .Build();
 
-        private static KirokuDatabaseContext _kirokuDatabaseContext;
-        private static PostgresPartitionDao _dao; 
+        private static KirokuDatabaseContext? _kirokuDatabaseContext;
+        private static PostgresPartitionDao? _dao; 
 
         [ClassInitialize]
         public static async Task Initialize(TestContext testContext)
@@ -41,7 +41,7 @@ namespace Kiroku.Persistence.Tests
         [TestCleanup]
         public async Task TestCleanup()
         {
-            var partitions = await _dao.GetLogsTablePartitions();
+            var partitions = await _dao!.GetLogsTablePartitions();
             foreach (var partition in partitions)
             {
                 await _dao.DeletePartition(partition);
@@ -51,7 +51,7 @@ namespace Kiroku.Persistence.Tests
         [TestMethod]
         public async Task GetLogsTablePartitions_NoPartitions_AnyFalse()
         {
-            var emptyPartitions = await _dao.GetLogsTablePartitions();
+            var emptyPartitions = await _dao!.GetLogsTablePartitions();
 
             Assert.IsFalse(emptyPartitions.Any());
         }
@@ -61,7 +61,7 @@ namespace Kiroku.Persistence.Tests
         {
             var partitionName = "test_partition";
 
-            await _dao.CreateTablePartition(partitionName, DateTime.UtcNow, DateTime.UtcNow.AddDays(1));
+            await _dao!.CreateTablePartition(partitionName, DateTime.UtcNow, DateTime.UtcNow.AddDays(1));
             var partitions = await _dao.GetLogsTablePartitions();
 
             Assert.IsTrue(partitions.Count() == 1);
@@ -73,7 +73,7 @@ namespace Kiroku.Persistence.Tests
         {
             var partitionName = "test_partition";
 
-            await _dao.CreateTablePartition(partitionName, DateTime.UtcNow, DateTime.UtcNow.AddDays(1));
+            await _dao!.CreateTablePartition(partitionName, DateTime.UtcNow, DateTime.UtcNow.AddDays(1));
         }
 
         [TestMethod]
@@ -81,7 +81,7 @@ namespace Kiroku.Persistence.Tests
         {
             var partitionName = "test_partition";
 
-            await _dao.CreateTablePartition(partitionName, DateTime.UtcNow, DateTime.UtcNow.AddDays(1));
+            await _dao!.CreateTablePartition(partitionName, DateTime.UtcNow, DateTime.UtcNow.AddDays(1));
 
             await Assert.ThrowsExceptionAsync<PostgresException>(() => 
                 _dao.CreateTablePartition(partitionName, DateTime.UtcNow.AddDays(20), DateTime.UtcNow.AddDays(21)));
@@ -93,7 +93,7 @@ namespace Kiroku.Persistence.Tests
             var partitionName = "test_partition";
             var secondPartitionName = "test_partition2";
 
-            await _dao.CreateTablePartition(partitionName, DateTime.UtcNow, DateTime.UtcNow.AddDays(1));
+            await _dao!.CreateTablePartition(partitionName, DateTime.UtcNow, DateTime.UtcNow.AddDays(1));
 
             await Assert.ThrowsExceptionAsync<PostgresException>(() =>
                 _dao.CreateTablePartition(secondPartitionName, DateTime.UtcNow, DateTime.UtcNow.AddDays(2)));
@@ -105,7 +105,7 @@ namespace Kiroku.Persistence.Tests
             var partitionName = "test_partition";
 
             await Assert.ThrowsExceptionAsync<PostgresException>(() =>
-                _dao.CreateTablePartition(partitionName, DateTime.UtcNow.AddDays(1), DateTime.UtcNow));
+                _dao!.CreateTablePartition(partitionName, DateTime.UtcNow.AddDays(1), DateTime.UtcNow));
         }
 
         [TestMethod]
@@ -113,7 +113,7 @@ namespace Kiroku.Persistence.Tests
         {
             var partitionName = "test_partition";
 
-            await _dao.CreateTablePartition(partitionName, DateTime.UtcNow, DateTime.UtcNow.AddDays(1));
+            await _dao!.CreateTablePartition(partitionName, DateTime.UtcNow, DateTime.UtcNow.AddDays(1));
 
             await _dao.DeletePartition(partitionName);
         }
@@ -124,7 +124,7 @@ namespace Kiroku.Persistence.Tests
             var partitionName = "test_partition";
 
             await Assert.ThrowsExceptionAsync<PostgresException>(() =>
-                _dao.DeletePartition(partitionName));
+                _dao!.DeletePartition(partitionName));
         }
     }
 }

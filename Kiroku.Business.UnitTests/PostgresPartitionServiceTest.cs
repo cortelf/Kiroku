@@ -15,12 +15,12 @@ namespace Kiroku.Business.UnitTests
     [TestClass]
     public class PostgresPartitionServiceTest
     {
-        private IPartitionListAnalyzeStrategy _analyzeStrategy;
-        private IPartitionTableNamingStrategy _namingStrategy;
-        private ILogger<PostgresPartitionService> _logger;
-        private IPostgresPartitionDao _partitionDao;
+        private IPartitionListAnalyzeStrategy? _analyzeStrategy;
+        private IPartitionTableNamingStrategy? _namingStrategy;
+        private ILogger<PostgresPartitionService>? _logger;
+        private IPostgresPartitionDao? _partitionDao;
 
-        private PostgresPartitionService _service;
+        private PostgresPartitionService? _service;
 
         [TestInitialize]
         public void TestInitialize()
@@ -39,12 +39,12 @@ namespace Kiroku.Business.UnitTests
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
             var tomorrow = today.AddDays(1);
             var partitionName = "2023-10-20";
-            _partitionDao.GetLogsTablePartitions().Returns(names);
-            _analyzeStrategy.GetLastPartitionsDate(Array.Empty<DateOnly>()).ReturnsForAnyArgs(today);
+            _partitionDao!.GetLogsTablePartitions().Returns(names);
+            _analyzeStrategy!.GetLastPartitionsDate(Array.Empty<DateOnly>()).ReturnsForAnyArgs(today);
             _analyzeStrategy.CheckCreatingNewPartitionIsRequired(today).Returns(true);
-            _namingStrategy.MakePartitionName(today).ReturnsForAnyArgs(partitionName);
+            _namingStrategy!.MakePartitionName(today).ReturnsForAnyArgs(partitionName);
 
-            var result = await _service.CreateNextPartition();
+            var result = await _service!.CreateNextPartition();
 
             await _partitionDao.Received().CreateTablePartition(partitionName, 
                 today.ToDateTime(new TimeOnly(), DateTimeKind.Utc), 
@@ -59,12 +59,12 @@ namespace Kiroku.Business.UnitTests
             var names = new string[] { partitionName };
             var today = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(2);
             var tomorrow = today.AddDays(1);
-            _partitionDao.GetLogsTablePartitions().Returns(names);
-            _analyzeStrategy.GetLastPartitionsDate(Array.Empty<DateOnly>()).ReturnsForAnyArgs(today);
+            _partitionDao!.GetLogsTablePartitions().Returns(names);
+            _analyzeStrategy!.GetLastPartitionsDate(Array.Empty<DateOnly>()).ReturnsForAnyArgs(today);
             _analyzeStrategy.CheckCreatingNewPartitionIsRequired(today).Returns(false);
-            _namingStrategy.MakePartitionName(today).ReturnsForAnyArgs(partitionName);
+            _namingStrategy!.MakePartitionName(today).ReturnsForAnyArgs(partitionName);
 
-            var result = await _service.CreateNextPartition();
+            var result = await _service!.CreateNextPartition();
 
             await _partitionDao.DidNotReceive().CreateTablePartition(partitionName,
                 today.ToDateTime(new TimeOnly(), DateTimeKind.Utc),
@@ -79,13 +79,13 @@ namespace Kiroku.Business.UnitTests
             var actualDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-4);
             var oldDateString = oldDate.ToString("dd-M-yyyy", CultureInfo.InvariantCulture);
             var actualDateString = actualDate.ToString("dd-M-yyyy", CultureInfo.InvariantCulture);
-            _partitionDao.GetLogsTablePartitions().Returns(new string[] { actualDateString, oldDateString, oldDateString, oldDateString });
-            _namingStrategy.ParsePartitionName(oldDateString).Returns(oldDate);
+            _partitionDao!.GetLogsTablePartitions().Returns(new string[] { actualDateString, oldDateString, oldDateString, oldDateString });
+            _namingStrategy!.ParsePartitionName(oldDateString).Returns(oldDate);
             _namingStrategy.ParsePartitionName(actualDateString).Returns(actualDate);
             _namingStrategy.MakePartitionName(oldDate).Returns(oldDateString);
             _namingStrategy.MakePartitionName(actualDate).Returns(actualDateString);
 
-            await _service.DeleteOldPartitions();
+            await _service!.DeleteOldPartitions();
 
             await _partitionDao.Received(3).DeletePartition(oldDateString);
             await _partitionDao.DidNotReceive().DeletePartition(actualDateString);

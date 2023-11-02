@@ -18,18 +18,18 @@ namespace Kiroku.Business.IntegrationTests
     [TestClass]
     public class PostgresPartitionServiceTest
     {
-        private IPartitionListAnalyzeStrategy _analyzeStrategy;
-        private IPartitionTableNamingStrategy _namingStrategy;
-        private ILogger<PostgresPartitionService> _logger;
-        private IPostgresPartitionDao _partitionDao;
+        private IPartitionListAnalyzeStrategy? _analyzeStrategy;
+        private IPartitionTableNamingStrategy? _namingStrategy;
+        private ILogger<PostgresPartitionService>? _logger;
+        private IPostgresPartitionDao? _partitionDao;
 
-        private PostgresPartitionService _service;
+        private PostgresPartitionService? _service;
 
         private static PostgreSqlContainer _postgres = new PostgreSqlBuilder()
             .WithImage("postgres:16-alpine")
             .Build();
 
-        private static KirokuDatabaseContext _kirokuDatabaseContext;
+        private static KirokuDatabaseContext? _kirokuDatabaseContext;
 
         [TestInitialize]
         public void TestInitialize()
@@ -37,7 +37,7 @@ namespace Kiroku.Business.IntegrationTests
             _analyzeStrategy = new PartitionListAnalyzeStrategy();
             _namingStrategy = new PartitionTableNamingStrategy();
             _logger = Substitute.For<ILogger<PostgresPartitionService>>();
-            _partitionDao = new PostgresPartitionDao(_kirokuDatabaseContext);
+            _partitionDao = new PostgresPartitionDao(_kirokuDatabaseContext!);
             _service = new PostgresPartitionService(_analyzeStrategy, _namingStrategy, _logger, _partitionDao);
 
 
@@ -61,7 +61,7 @@ namespace Kiroku.Business.IntegrationTests
         [TestCleanup]
         public async Task TestCleanup()
         {
-            var partitions = await _partitionDao.GetLogsTablePartitions();
+            var partitions = await _partitionDao!.GetLogsTablePartitions();
             foreach (var partition in partitions)
             {
                 await _partitionDao.DeletePartition(partition);
@@ -71,8 +71,8 @@ namespace Kiroku.Business.IntegrationTests
         [TestMethod]
         public async Task CreateNextPartition_NoPartitions_CreatedOne()
         {
-            await _service.CreateNextPartition();
-            var partitions = await _partitionDao.GetLogsTablePartitions();
+            await _service!.CreateNextPartition();
+            var partitions = await _partitionDao!.GetLogsTablePartitions();
 
             Assert.AreEqual(1, partitions.Count() );
         }
@@ -80,10 +80,10 @@ namespace Kiroku.Business.IntegrationTests
         [TestMethod]
         public async Task CreateNextPartition_NoPartitionsCalledCreate3Times_CreatedTwo()
         {
-            var firstAnswer = await _service.CreateNextPartition();
+            var firstAnswer = await _service!.CreateNextPartition();
             var secondAnswer = await _service.CreateNextPartition();
             var thirdAnswer = await _service.CreateNextPartition();
-            var partitions = await _partitionDao.GetLogsTablePartitions();
+            var partitions = await _partitionDao!.GetLogsTablePartitions();
 
             Assert.AreEqual(2, partitions.Count());
             Assert.AreEqual(firstAnswer, Services.CreateNextPartitionResult.Created);
@@ -95,12 +95,12 @@ namespace Kiroku.Business.IntegrationTests
         public async Task CreateAndDeletePartition_1Partition_NoErrors()
         {
             var partitionDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(-8);
-            var partitionName = _namingStrategy.MakePartitionName(partitionDate);
+            var partitionName = _namingStrategy!.MakePartitionName(partitionDate);
 
-            await _partitionDao.CreateTablePartition(partitionName, 
+            await _partitionDao!.CreateTablePartition(partitionName, 
                 partitionDate.AddDays(-1).ToDateTime(new TimeOnly(), DateTimeKind.Utc),
                 partitionDate.ToDateTime(new TimeOnly(), DateTimeKind.Utc));
-            await _service.DeleteOldPartitions();
+            await _service!.DeleteOldPartitions();
             var partitions = await _partitionDao.GetLogsTablePartitions();
 
 
